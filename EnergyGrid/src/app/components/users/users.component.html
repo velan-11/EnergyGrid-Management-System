@@ -1,0 +1,139 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h2 style="font-size:22px;">User Management</h2>
+      <p class="subtitle">Approve pending registrations and manage user access.</p>
+    </div>
+  </div>
+
+  <div class="search-bar" style="margin: 12px 0; display: flex; gap: 8px; align-items: center;">
+    <input
+      type="number"
+      placeholder="Enter User ID"
+      [(ngModel)]="searchId"
+      (keyup.enter)="searchById()"
+      style="padding: 6px 10px;"
+    />
+    <button type="button" (click)="searchById()" [disabled]="searching()">
+      {{ searching() ? 'Searching…' : 'Search' }}
+    </button>
+    <button type="button" (click)="clearSearch()">Clear</button>
+  </div>
+
+  @if (searchError()) {
+    <p class="status error">{{ searchError() }}</p>
+  }
+
+  @if (searchedUser(); as user) {
+    <h3 style="margin-top: 16px;">Search Result</h3>
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Registered At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr [class.row-pending]="isPending(user)">
+            <td>{{ user.userId }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td><span [class]="pillClass(user)">{{ pillLabel(user) }}</span></td>
+            <td>{{ formatRegistered(user) }}</td>
+            <td>
+              <div class="btn-row">
+                @if (user.deleted) {
+                  <button class="approve small" type="button" [disabled]="user.busy" (click)="restore(user)">Restore</button>
+                } @else if (isCustomer(user)) {
+                  <span class="muted">Auto-approved</span>
+                } @else if (isPending(user)) {
+                  <button class="approve small" type="button" [disabled]="user.busy" (click)="approve(user)">Approve</button>
+                  <button class="danger small" type="button" [disabled]="user.busy" (click)="reject(user)">Reject</button>
+                } @else if (isActive(user)) {
+                  <button class="subtle small" type="button" [disabled]="user.busy" (click)="deactivate(user)">Deactivate</button>
+                } @else {
+                  <button class="approve small" type="button" [disabled]="user.busy" (click)="approve(user)">Approve</button>
+                }
+                @if (user.rowMessage) {
+                  <span class="row-msg"
+                        [class.success]="user.rowMessage.tone === 'success'"
+                        [class.error]="user.rowMessage.tone === 'error'">
+                    {{ user.rowMessage.text }}
+                  </span>
+                }
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  } @else if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (loadError()) {
+    <p class="status error">{{ loadError() }}</p>
+  } @else {
+    <div class="summary-line">
+      {{ totalCount() }} total users · <span class="accent-pending">{{ pendingCount() }} pending approval</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Registered At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of rows(); track user.userId) {
+            <tr [class.row-pending]="isPending(user)">
+              <td>{{ user.userId }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.role }}</td>
+              <td><span [class]="pillClass(user)">{{ pillLabel(user) }}</span></td>
+              <td>{{ formatRegistered(user) }}</td>
+              <td>
+                <div class="btn-row">
+                  @if (user.deleted) {
+                    <button class="approve small" type="button" [disabled]="user.busy" (click)="restore(user)">Restore</button>
+                  } @else if (isCustomer(user)) {
+                    <span class="muted">Auto-approved</span>
+                  } @else if (isPending(user)) {
+                    <button class="approve small" type="button" [disabled]="user.busy" (click)="approve(user)">Approve</button>
+                    <button class="danger small" type="button" [disabled]="user.busy" (click)="reject(user)">Reject</button>
+                  } @else if (isActive(user)) {
+                    <button class="subtle small" type="button" [disabled]="user.busy" (click)="deactivate(user)">Deactivate</button>
+                  } @else {
+                    <button class="approve small" type="button" [disabled]="user.busy" (click)="approve(user)">Approve</button>
+                  }
+                  @if (user.rowMessage) {
+                    <span class="row-msg"
+                          [class.success]="user.rowMessage.tone === 'success'"
+                          [class.error]="user.rowMessage.tone === 'error'">
+                      {{ user.rowMessage.text }}
+                    </span>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7"><span class="muted">No users.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

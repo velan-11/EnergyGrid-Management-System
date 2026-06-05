@@ -1,0 +1,119 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Work Orders</h1>
+    @if (canWrite() && mode() === 'closed') {
+      <button class="primary" type="button" (click)="openAdd()">Create Work Order</button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Asset</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Created At</th>
+            <th>Due Date</th>
+            @if (canWrite()) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (w of rows(); track w.id) {
+            <tr>
+              <td>{{ w.id }}</td>
+              <td>{{ assetLabel(w.assetId) }}</td>
+              <td>{{ w.issueDescription }}</td>
+              <td>{{ w.status }}</td>
+              <td>{{ assignedDisplay(w) }}</td>
+              <td>{{ w.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ w.dueDate | date:'yyyy-MM-dd' }}</td>
+              @if (canWrite()) {
+                <td>
+                  <div class="btn-row">
+                    <button class="secondary small" type="button" (click)="openEdit(w)">Edit</button>
+                    <button class="danger small" type="button" (click)="delete(w)">Delete</button>
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="canWrite() ? 8 : 7"><span class="muted">No work orders.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (mode() !== 'closed') {
+      <form class="inline-form" (ngSubmit)="submit()">
+        <h2>{{ mode() === 'edit' ? 'Edit Work Order' : 'Create Work Order' }}</h2>
+        <div class="form-grid">
+          <div>
+            <label for="w-asset">Asset</label>
+            @if (assets().length > 0) {
+              <select id="w-asset" name="assetId" [(ngModel)]="assetIdInput" required>
+                <option value="">Select an asset</option>
+                @for (a of assets(); track aId(a)) {
+                  <option [value]="aId(a)">{{ aLabel(a) }}</option>
+                }
+              </select>
+            } @else {
+              <input id="w-asset" name="assetId" type="number" min="1" [(ngModel)]="assetIdInput" required>
+            }
+          </div>
+          <div>
+            <label for="w-status">Status</label>
+            <select id="w-status" name="status" [(ngModel)]="status" required>
+              <option value="CREATED">Created</option>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="OPEN">Open</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="full">
+            <label for="w-desc">Description</label>
+            <textarea id="w-desc" name="issueDescription" [(ngModel)]="issueDescription" required></textarea>
+          </div>
+          <div>
+            <label for="w-due">Due Date</label>
+            <input id="w-due" name="dueDate" type="datetime-local" [(ngModel)]="dueDate" required>
+          </div>
+          <div class="full">
+            <label for="w-tech">Assign Technician (optional)</label>
+            <select id="w-tech" name="technicianId" [(ngModel)]="assignedTechnicianId">
+              <option value="">— Unassigned —</option>
+              @for (t of technicians(); track t.userId) {
+                <option [value]="t.userId">{{ t.name }}</option>
+              }
+            </select>
+            @if (technicians().length === 0) {
+              <span class="muted" style="display:block; font-size:11px; margin-top:4px;">
+                No technicians available. Contact admin.
+              </span>
+            } @else {
+              <span class="muted" style="display:block; font-size:11px; margin-top:4px;">
+                Select a technician to assign this work order.
+              </span>
+            }
+          </div>
+        </div>
+        @if (formError()) { <p class="form-error">{{ formError() }}</p> }
+        <div class="form-actions">
+          <button class="subtle" type="button" (click)="cancel()">Cancel</button>
+          <button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>

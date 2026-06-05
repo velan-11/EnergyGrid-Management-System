@@ -1,0 +1,285 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Demand Response</h1>
+      <p class="subtitle">Manage demand response events and grid load reduction.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  } @else {
+    <!-- ========== Programs ========== -->
+    <section style="margin-bottom: 28px;">
+      <div class="page-header" style="margin-bottom:10px;">
+        <h2 style="font-size:18px;">Programs</h2>
+        @if (canWriteProgram() && programMode() === 'closed') {
+          <button class="primary" type="button" (click)="openAddProgram()">Add Program</button>
+        }
+      </div>
+
+      <div class="table-wrap">
+        <table class="flat">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Created By</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of programs(); track p.programId) {
+              <tr>
+                <td>{{ p.programId }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.type }}</td>
+                <td>{{ p.status }}</td>
+                <td>{{ p.createdBy }}</td>
+                <td>{{ formatTime(p.createdAt) }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6"><span class="muted">No programs.</span></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (programMode() === 'add') {
+        <form class="inline-form" (ngSubmit)="submitProgram()">
+          <h2>Add Program</h2>
+          <div class="form-grid">
+            <div>
+              <label for="pg-name">Name</label>
+              <input id="pg-name" name="name" type="text" [(ngModel)]="pg_name" required>
+            </div>
+            <div>
+              <label for="pg-type">Type</label>
+              <select id="pg-type" name="type" [(ngModel)]="pg_type" required>
+                <option value="PEAK_SHAVING">Peak Shaving</option>
+                <option value="LOAD_SHIFTING">Load Shifting</option>
+                <option value="EMERGENCY_DR">Emergency DR</option>
+                <option value="PRICE_BASED">Price Based</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="pg-note">Enrollment notes (optional)</label>
+              <textarea id="pg-note" name="note" [(ngModel)]="pg_note"
+                        placeholder="Stored as JSON criteria."></textarea>
+            </div>
+          </div>
+          @if (programFormError()) { <p class="form-error">{{ programFormError() }}</p> }
+          <div class="form-actions">
+            <button class="subtle" type="button" (click)="cancelProgramForm()">Cancel</button>
+            <button class="primary" type="submit" [disabled]="programSubmitting()">
+              {{ programSubmitting() ? 'Saving…' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+
+    <!-- ========== Events ========== -->
+    <section>
+      <div class="page-header" style="margin-bottom:10px;">
+        <h2 style="font-size:18px;">Events</h2>
+        @if (canWriteEvent() && eventMode() === 'closed') {
+          <button class="primary" type="button" (click)="openAddEvent()"
+                  [disabled]="programs().length === 0">
+            Create Event
+          </button>
+        }
+      </div>
+
+      @if (programs().length === 0) {
+        <p class="muted" style="margin-bottom:12px;">
+          Create a program first — an event must belong to one.
+        </p>
+      }
+
+      <div class="table-wrap">
+        <table class="flat">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Event Name</th>
+              <th>Program</th>
+              <th>Status</th>
+              <th>Target Reduction (kW)</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Created By</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of events(); track e.eventId) {
+              <tr>
+                <td>{{ e.eventId }}</td>
+                <td>{{ e.eventName }}</td>
+                <td>{{ programNameFor(e.programId) }}</td>
+                <td><span [class]="statusPill(e.status)">{{ e.status | lowercase }}</span></td>
+                <td>{{ e.targetReductionKW }}</td>
+                <td>{{ formatTime(e.startAt) }}</td>
+                <td>{{ formatTime(e.endAt) }}</td>
+                <td>{{ e.createdBy }}</td>
+                <td>
+                  <div class="btn-row">
+                    @if (canWriteEvent() && isActiveBtn(e)) {
+                      <button class="approve small" type="button" (click)="activate(e)">Activate</button>
+                    }
+                    @if (canWriteEvent() && isCompleteBtn(e)) {
+                      <button class="secondary small" type="button" (click)="complete(e)">Complete</button>
+                    }
+                    @if (canWriteEvent() && isCancelBtn(e)) {
+                      @if (confirmCancelFor() === e.eventId) {
+                        <span style="font-size:12px; color:var(--text-muted);">Cancel?</span>
+                        <button class="danger small" type="button" (click)="confirmCancel(e)">Yes</button>
+                        <button class="subtle small" type="button" (click)="abortCancel()">No</button>
+                      } @else {
+                        <button class="danger small" type="button" (click)="askCancel(e)">Cancel</button>
+                      }
+                    }
+                    @if (canJoin()) {
+                      @if (hasJoined(e)) {
+                        <button class="approve small join-btn joined" type="button" disabled>
+                          ✓ Joined
+                        </button>
+                      } @else if (isJoining(e)) {
+                        <button class="approve small join-btn" type="button" disabled>
+                          <span class="join-spinner" aria-hidden="true"></span>
+                          Joining…
+                        </button>
+                      } @else {
+                        <button class="approve small join-btn" type="button"
+                                [disabled]="!isActiveStatus(e)"
+                                (click)="joinEvent(e)">
+                          Join
+                        </button>
+                      }
+                    }
+                    @if (canSeeParticipants()) {
+                      <button class="subtle small" type="button" (click)="toggleParticipations(e)">
+                        {{ partsFor(e.eventId)?.expanded ? 'Hide' : 'Participants' }}
+                      </button>
+                    }
+                  </div>
+                  @if (msgFor(e.eventId); as msg) {
+                    <div class="row-msg" [class.success]="msg.tone === 'ok'" [class.error]="msg.tone === 'err'">
+                      {{ msg.text }}
+                    </div>
+                  }
+                </td>
+              </tr>
+              @if (canSeeParticipants() && partsFor(e.eventId)?.expanded) {
+                <tr>
+                  <td colspan="9" style="background: rgba(20, 184, 166, 0.04);">
+                    @if (partsFor(e.eventId)!.loading) {
+                      <p class="muted">Loading participants…</p>
+                    } @else if (partsFor(e.eventId)!.error) {
+                      <p class="error">{{ partsFor(e.eventId)!.error }}</p>
+                    } @else if (partsFor(e.eventId)!.rows.length === 0) {
+                      <p class="muted">No participants yet.</p>
+                    } @else {
+                      <table class="flat" style="width:100%; background:transparent;">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Participant</th>
+                            <th>Status</th>
+                            <th>Reported (kW)</th>
+                            <th>Verified At</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (p of partsFor(e.eventId)!.rows; track p.participationId) {
+                            <tr>
+                              <td>{{ p.participationId }}</td>
+                              <td>{{ p.participantEmail }}</td>
+                              <td><span [class]="participationPill(p.status)">{{ p.status | lowercase }}</span></td>
+                              <td>{{ p.reportedReductionKW ?? '—' }}</td>
+                              <td>{{ formatTime(p.verifiedAt) }}</td>
+                              <td>
+                                <div class="btn-row">
+                                  @if (canJoin() && p.status !== 'OPTED_OUT') {
+                                    <input type="number" step="0.01" min="0.01"
+                                           placeholder="kW"
+                                           style="width:100px;"
+                                           [(ngModel)]="partsFor(e.eventId)!.reductionInput[p.participationId]"
+                                           [ngModelOptions]="{standalone: true}">
+                                    <button class="secondary small" type="button"
+                                            (click)="reportReduction(e, p)">Report</button>
+                                  }
+                                  @if (canVerify() && p.status === 'REPORTED') {
+                                    <button class="approve small" type="button"
+                                            (click)="verifyParticipation(e, p)">Verify</button>
+                                  }
+                                  @if (canJoin() && p.status !== 'OPTED_OUT') {
+                                    <button class="subtle small" type="button"
+                                            (click)="optOut(e, p)">Opt out</button>
+                                  }
+                                </div>
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr><td colspan="9"><span class="muted">No events.</span></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (eventMode() === 'add') {
+        <form class="inline-form" (ngSubmit)="submitEvent()">
+          <h2>Create Event</h2>
+          <div class="form-grid">
+            <div>
+              <label for="ev-name">Event Name</label>
+              <input id="ev-name" name="eventName" type="text" [(ngModel)]="ev_eventName" required minlength="3">
+            </div>
+            <div>
+              <label for="ev-program">Program</label>
+              <select id="ev-program" name="programId" [(ngModel)]="ev_programId" required>
+                <option value="">Select a program</option>
+                @for (p of programs(); track p.programId) {
+                  <option [value]="p.programId">{{ p.name }} ({{ p.type }})</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="ev-start">Start Time</label>
+              <input id="ev-start" name="startAt" type="datetime-local" [(ngModel)]="ev_startAt" required>
+            </div>
+            <div>
+              <label for="ev-end">End Time</label>
+              <input id="ev-end" name="endAt" type="datetime-local" [(ngModel)]="ev_endAt" required>
+            </div>
+            <div>
+              <label for="ev-target">Target Reduction (kW)</label>
+              <input id="ev-target" name="targetReductionKW" type="number" step="0.01" min="0.01"
+                     [(ngModel)]="ev_targetReductionKW" required>
+            </div>
+          </div>
+          @if (eventFormError()) { <p class="form-error">{{ eventFormError() }}</p> }
+          <div class="form-actions">
+            <button class="subtle" type="button" (click)="cancelEventForm()">Cancel</button>
+            <button class="primary" type="submit" [disabled]="eventSubmitting()">
+              {{ eventSubmitting() ? 'Saving…' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</div>

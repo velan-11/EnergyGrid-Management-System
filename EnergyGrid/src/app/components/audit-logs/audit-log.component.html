@@ -1,0 +1,89 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Audit Log</h1>
+      <p class="subtitle">Login activity (successes and failures).</p>
+    </div>
+  </div>
+
+  <!-- Simple search bar: enter a User ID and click Search. -->
+  <div class="search-bar" style="margin: 12px 0; display: flex; gap: 8px; align-items: center;">
+    <input
+      type="number"
+      placeholder="Enter User ID"
+      [(ngModel)]="searchId"
+      (keyup.enter)="searchByUserId()"
+      style="padding: 6px 10px;"
+    />
+    <button type="button" (click)="searchByUserId()" [disabled]="searching()">
+      {{ searching() ? 'Searching…' : 'Search' }}
+    </button>
+    <button type="button" (click)="clearSearch()">Clear</button>
+  </div>
+
+  @if (searchError()) {
+    <p class="status error">{{ searchError() }}</p>
+  }
+
+  @if (searchedRows() !== null) {
+    <!-- Show ONLY the audit logs for the searched User ID. -->
+    <h3 style="margin-top: 16px;">Search Result</h3>
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Action</th>
+            <th>Actor</th>
+            <th>Timestamp</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of searchedRows(); track e.auditId + '-' + e.serviceName) {
+            <tr>
+              <td>{{ e.userId || '—' }}</td>
+              <td>{{ actionLabel(e.action) }}</td>
+              <td>{{ actorOf(e) }}</td>
+              <td>{{ formatTime(e.timestamp) }}</td>
+              <td [title]="e.details">{{ truncate(e.details) }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5"><span class="muted">No audit entries for this user.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (loading()) {
+    <p class="status">Loading audit log…</p>
+  } @else if (loadError()) {
+    <p class="status error">{{ loadError() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Action</th>
+            <th>Actor</th>
+            <th>Timestamp</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of rows(); track e.auditId + '-' + e.serviceName) {
+            <tr>
+              <td>{{ e.userId || '—' }}</td>
+              <td>{{ actionLabel(e.action) }}</td>
+              <td>{{ actorOf(e) }}</td>
+              <td>{{ formatTime(e.timestamp) }}</td>
+              <td [title]="e.details">{{ truncate(e.details) }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5"><span class="muted">No audit entries.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

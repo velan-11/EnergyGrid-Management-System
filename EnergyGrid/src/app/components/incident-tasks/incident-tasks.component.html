@@ -1,0 +1,157 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Incident Tasks</h1>
+    @if (canWrite() && mode() === 'closed') {
+      <button class="primary" type="button" (click)="openAdd()">Add Task</button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Outage ID</th>
+            <th>Outage Asset</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Assigned At</th>
+            <th>Evidence</th>
+            @if (canWrite()) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of rows(); track t.id) {
+            <tr>
+              <td>{{ t.id }}</td>
+              <td>{{ t.outageId }}</td>
+              <td>{{ t.outageAsset }}</td>
+              <td>{{ t.status }}</td>
+              <td>{{ t.assignedTo }}</td>
+              <td>{{ t.assignedAt ? (t.assignedAt | date:'yyyy-MM-dd HH:mm') : '—' }}</td>
+              <td>
+                @if (uploadingId() === t.id) {
+                  <span class="muted">Uploading…</span>
+                } @else if (t.evidenceURI && t.evidenceURI !== 'about:blank') {
+                  <span style="display:inline-flex; align-items:center; gap:8px;">
+                    @if (isImageUri(t.evidenceURI)) {
+                      <a [href]="t.evidenceURI" target="_blank" rel="noopener" aria-label="Open evidence in a new tab">
+                        <img [src]="t.evidenceURI" alt="evidence"
+                             style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #99f6e4; display:block;">
+                      </a>
+                    }
+                    <a [href]="t.evidenceURI" target="_blank" rel="noopener"
+                       style="color: var(--active); font-weight: 600;">📎 Evidence</a>
+                    @if (canUploadFor(t)) {
+                      <button type="button"
+                              (click)="startUploadFor(t, $event)"
+                              style="background:transparent; border:0; padding:0; color:var(--text-muted); font-size:12px; cursor:pointer; text-decoration:underline;">
+                        Replace
+                      </button>
+                    }
+                    @if (justUploadedId() === t.id) {
+                      <span style="color: var(--active); font-size:12px; font-weight:600;">✓ Uploaded</span>
+                    }
+                  </span>
+                } @else if (canUploadFor(t)) {
+                  <div style="display:flex; flex-direction:column; align-items:flex-start; gap:4px;">
+                    <button type="button" (click)="startUploadFor(t, $event)"
+                            style="border:1px solid #0f766e; color:#0f766e; background:#fff; border-radius:6px; padding:4px 10px; font-size:13px; cursor:pointer;">
+                      📷 Upload
+                    </button>
+                    @if (rowError(t.id); as msg) {
+                      <span style="color:#ef4444; font-size:12px;">{{ msg }}</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              @if (canWrite()) {
+                <td>
+                  <button class="secondary small" type="button" (click)="openEdit(t)">Edit</button>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="canWrite() ? 8 : 7"><span class="muted">No incident tasks.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (mode() !== 'closed') {
+      <form class="inline-form" (ngSubmit)="submit()">
+        <h2>{{ mode() === 'edit' ? 'Edit Incident Task' : 'Add Incident Task' }}</h2>
+        <div class="form-grid">
+          <div>
+            <label for="it-outage">Outage</label>
+            @if (outages().length > 0) {
+              <select id="it-outage" name="outageId" [(ngModel)]="outageId" required [disabled]="mode() === 'edit'">
+                <option value="">Select an outage</option>
+                @for (o of outages(); track o.id) {
+                  <option [value]="o.id">{{ outageDisplay(o) }}</option>
+                }
+              </select>
+            } @else {
+              <input id="it-outage" name="outageId" type="number" min="1" [(ngModel)]="outageId" required [disabled]="mode() === 'edit'">
+            }
+          </div>
+          <div>
+            <label for="it-assigned">Assigned To (user id)</label>
+            <input id="it-assigned" name="assignedTo" type="number" min="1" [(ngModel)]="assignedTo" required [disabled]="mode() === 'edit'">
+          </div>
+          <div>
+            <label for="it-status">Status</label>
+            <select id="it-status" name="status" [(ngModel)]="status" required>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Evidence</label>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <label class="subtle" style="border:1px dashed var(--border); border-radius:8px; padding:14px 18px; cursor:pointer; flex:1; min-width:200px; text-align:center;">
+                Click to upload or drag & drop
+                <input type="file" accept="image/*,video/*,.pdf" (change)="onFilePicked($event)" hidden>
+              </label>
+              <label class="secondary" style="cursor:pointer; padding:8px 14px; border:1px solid var(--primary); border-radius:8px; color:var(--primary); background:#fff;">
+                📷 Take Photo
+                <input type="file" accept="image/*" capture="environment" (change)="onFilePicked($event)" hidden>
+              </label>
+              @if (previewUrl) {
+                <img [src]="previewUrl" alt="evidence preview" style="max-height:80px; border:1px solid var(--border); border-radius:6px;">
+              } @else if (currentEvidenceUri && currentEvidenceUri !== 'about:blank') {
+                <span class="muted" style="font-size:12px;">Current: {{ currentEvidenceUri }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        @if (evidenceWarning()) { <p class="form-error">{{ evidenceWarning() }}</p> }
+        @if (formError()) { <p class="form-error">{{ formError() }}</p> }
+        <div class="form-actions">
+          <button class="subtle" type="button" (click)="cancel()">Cancel</button>
+          <button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+
+  <!--
+    Shared hidden file input for the per-row Evidence upload buttons.
+    Each row's Upload/Replace button sets activeUploadRowId then
+    programmatically clicks this element. accept="image/*" +
+    capture="environment" opens the rear camera on mobile and the
+    file picker on desktop.
+  -->
+  <input #rowFileInput type="file" accept="image/*" capture="environment"
+         (change)="onRowFilePicked($event)" hidden>
+</div>

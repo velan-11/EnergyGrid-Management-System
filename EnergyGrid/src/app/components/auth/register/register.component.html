@@ -1,0 +1,84 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand"><span class="bolt">⚡</span><span>EnergyGrid</span></div>
+    <h1>Create an account</h1>
+
+    @if (successMessage()) {
+      <p class="form-success" style="text-align:center;">{{ successMessage() }}</p>
+      <div class="auth-links" style="justify-content:center;">
+        <a routerLink="/login">Go to Login →</a>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-row">
+          <label for="reg-name">Full name</label>
+          <input id="reg-name" type="text" formControlName="name" autocomplete="name"
+                 [class.invalid]="hasError('name')">
+          @if (hasError('name')) { <span class="field-error">{{ errorOf('name') }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-username">Username</label>
+          <input id="reg-username" type="text" formControlName="username" autocomplete="username"
+                 [class.invalid]="hasError('username')">
+          @if (hasError('username')) { <span class="field-error">{{ errorOf('username') }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-email">Email</label>
+          <input id="reg-email" type="email" formControlName="email" autocomplete="email"
+                 [class.invalid]="hasError('email')">
+          @if (hasError('email')) { <span class="field-error">{{ errorOf('email') }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-phone">Phone (10+ digits)</label>
+          <input id="reg-phone" type="tel" formControlName="phone" inputmode="numeric"
+                 [class.invalid]="hasError('phone')">
+          @if (hasError('phone')) { <span class="field-error">{{ errorOf('phone') }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-password">Password</label>
+          <input id="reg-password" type="password" formControlName="password" autocomplete="new-password"
+                 [class.invalid]="hasError('password')">
+          <div class="strength-bar" aria-hidden="true">
+            <span [style.background]="passwordStrength().score >= 1 ? passwordStrength().color : '#e5e7eb'"></span>
+            <span [style.background]="passwordStrength().score >= 2 ? passwordStrength().color : '#e5e7eb'"></span>
+            <span [style.background]="passwordStrength().score >= 3 ? passwordStrength().color : '#e5e7eb'"></span>
+          </div>
+          @if (passwordStrength().label) {
+            <span class="field-info" [style.color]="passwordStrength().color">Strength: {{ passwordStrength().label }}</span>
+          }
+          @if (hasError('password')) { <span class="field-error">{{ errorOf('password') }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-confirm">Confirm password</label>
+          <input id="reg-confirm" type="password" formControlName="confirmPassword" autocomplete="new-password"
+                 [class.invalid]="hasConfirmPasswordError()">
+          @if (hasConfirmPasswordError()) { <span class="field-error">{{ confirmPasswordError() }}</span> }
+        </div>
+        <div class="form-row">
+          <label for="reg-role">Role</label>
+          <select id="reg-role" formControlName="role" [class.invalid]="hasError('role')">
+            <option value="">Select a role</option>
+            @for (role of roles; track role.value) {
+              <option [value]="role.value">{{ role.label }}</option>
+            }
+          </select>
+          @if (hasError('role')) { <span class="field-error">{{ errorOf('role') }}</span> }
+          @if (isNonCustomer() && !hasError('role')) {
+            <span class="field-info">ℹ️ Non-customer accounts require admin approval before you can log in.</span>
+          }
+        </div>
+        @if (serverError()) {
+          <p class="form-error">{{ serverError() }}</p>
+        }
+        <div class="form-actions">
+          <button class="primary" type="submit" [disabled]="loading()">
+            {{ loading() ? 'Creating…' : 'Create account' }}
+          </button>
+        </div>
+      </form>
+      <div class="auth-links">
+        <a routerLink="/login">Back to sign in</a>
+      </div>
+    }
+  </div>
+</div>

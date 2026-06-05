@@ -1,0 +1,93 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Generation Schedules</h1>
+    @if (canWrite() && !formOpen()) {
+      <button class="primary" type="button" (click)="openAdd()">Add Schedule</button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (error()) {
+    <p class="status error">{{ error() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Asset</th>
+            <th>Scheduled Output (kW)</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            @if (canWrite()) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of rows(); track s.scheduleId) {
+            <tr>
+              <td>{{ s.scheduleId }}</td>
+              <td>{{ assetLabel(s.assetId) }}</td>
+              <td>{{ s.targetKw }}</td>
+              <td>{{ s.startAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ s.endAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ s.status }}</td>
+              @if (canWrite()) {
+                <td>
+                  @if (s.status !== 'CANCELLED' && s.status !== 'COMPLETED') {
+                    <button class="danger small" type="button" (click)="cancelSchedule(s)">Cancel</button>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="canWrite() ? 7 : 6"><span class="muted">No schedules.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (formOpen()) {
+      <form class="inline-form" (ngSubmit)="submit()">
+        <h2>Add Schedule</h2>
+        <div class="form-grid">
+          <div>
+            <label for="s-asset">Asset</label>
+            @if (assets().length > 0) {
+              <select id="s-asset" name="assetId" [(ngModel)]="assetId" required>
+                <option value="">Select an asset</option>
+                @for (a of assets(); track aId(a)) {
+                  <option [value]="aId(a)">{{ aLabel(a) }}</option>
+                }
+              </select>
+            } @else {
+              <input id="s-asset" name="assetId" type="number" min="1" [(ngModel)]="assetId" required>
+            }
+          </div>
+          <div>
+            <label for="s-kw">Scheduled Output (kW)</label>
+            <input id="s-kw" name="targetKw" type="number" step="0.01" min="0.01" [(ngModel)]="targetKw" required>
+          </div>
+          <div>
+            <label for="s-start">Start</label>
+            <input id="s-start" name="startAt" type="datetime-local" [(ngModel)]="startAt" required>
+          </div>
+          <div>
+            <label for="s-end">End</label>
+            <input id="s-end" name="endAt" type="datetime-local" [(ngModel)]="endAt" required>
+          </div>
+        </div>
+        @if (formError()) { <p class="form-error">{{ formError() }}</p> }
+        <div class="form-actions">
+          <button class="subtle" type="button" (click)="cancelForm()">Cancel</button>
+          <button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>

@@ -1,0 +1,19 @@
+<div class="page">
+  <div class="welcome">
+    <h2>Welcome, {{ user()?.name || 'EnergyGrid User' }}</h2>
+    <p class="muted">EnergyGrid Console</p>
+  </div>
+
+  <div class="dash-grid">
+    @for (card of cards(); track card.route) {
+      <a class="dash-card" [routerLink]="card.route">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path [attr.d]="card.icon"></path>
+        </svg>
+        <div class="name">{{ card.label }}</div>
+        <div class="desc">{{ card.description }}</div>
+      </a>
+    }
+  </div>
+</div>

@@ -1,0 +1,34 @@
+:host { display: block; }
+
+.pill.scheduled { background: #0ea5e9; }
+
+.join-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.join-btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.join-btn.joined {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+  opacity: 0.9;
+}
+
+.join-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: join-spin 0.7s linear infinite;
+}
+
+@keyframes join-spin {
+  to { transform: rotate(360deg); }
+}

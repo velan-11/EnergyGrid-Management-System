@@ -1,0 +1,58 @@
+<div class="shell">
+  <aside class="sidebar" [class.open]="sidebarOpen()">
+    <div class="brand">
+      <span class="bolt" aria-hidden="true">⚡</span>
+      <span>EnergyGrid</span>
+    </div>
+    <nav class="nav-list">
+      @for (item of nav(); track item.route) {
+        <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path [attr.d]="item.icon"></path>
+          </svg>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="sidebar-backdrop" [class.show]="sidebarOpen()" (click)="sidebarOpen.set(false)"></div>
+
+  <div class="content">
+    <header class="topbar">
+      <button class="sidebar-toggle" type="button" aria-label="Toggle menu" (click)="toggleSidebar($event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+      </button>
+      <div class="page-title">{{ pageTitle() }}</div>
+      @if (user(); as u) {
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div class="user-block">
+            <div class="user-info">
+              <span class="uname">{{ u.name }}</span>
+              <span class="role-badge">{{ u.role }}</span>
+            </div>
+            <div class="avatar" role="button" tabindex="0"
+                 (click)="toggleDropdown($event)"
+                 (keyup.enter)="toggleDropdown($event)"
+                 aria-label="Open user menu">
+              {{ initials() }}
+            </div>
+            @if (dropdownOpen()) {
+              <div class="user-dropdown" role="menu">
+
+                <button type="button" class="signout" (click)="signOut()">Sign Out</button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </header>
+
+    <router-outlet></router-outlet>
+  </div>
+</div>

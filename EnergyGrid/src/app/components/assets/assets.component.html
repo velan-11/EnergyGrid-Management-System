@@ -1,0 +1,107 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Asset Catalog</h1>
+    @if (canCreate() && mode() === 'closed') {
+      <button class="primary" type="button" (click)="openAdd()">Add Asset</button>
+    }
+  </div>
+  @if (!canWrite()) {
+    <p class="muted" style="font-size:13px; margin-bottom:8px;">
+      You have read-only access to assets.
+    </p>
+  }
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (error()) {
+    <p class="status error">{{ error() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Capacity (kW)</th>
+            <th>Status</th>
+            @if (canWrite()) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of rows(); track id(a)) {
+            <tr>
+              <td>{{ id(a) }}</td>
+              <td>{{ displayNameOf(a) }}</td>
+              <td>{{ typeOf(a) }}</td>
+              <td>{{ locationOf(a) }}</td>
+              <td>{{ capacityOf(a) }}</td>
+              <td>{{ statusOf(a) }}</td>
+              @if (canWrite()) {
+                <td>
+                  <div class="btn-row">
+                    @if (canEdit()) {
+                      <button class="secondary small" type="button" (click)="openEdit(a)">Edit</button>
+                    }
+                    @if (canDelete()) {
+                      <button class="danger small" type="button" (click)="delete(a)">Delete</button>
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="canWrite() ? 7 : 6"><span class="muted">No assets.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (mode() !== 'closed') {
+      <form class="inline-form" (ngSubmit)="submit()">
+        <h2>{{ mode() === 'edit' ? 'Edit Asset' : 'Add Asset' }}</h2>
+        <div class="form-grid">
+          <div>
+            <label for="a-name">Name</label>
+            <input id="a-name" name="name" type="text" [(ngModel)]="name" required>
+          </div>
+          <div>
+            <label for="a-type">Type</label>
+            <select id="a-type" name="type" [(ngModel)]="type" required>
+              <option value="Solar">Solar</option>
+              <option value="Wind">Wind</option>
+              <option value="Hydro">Hydro</option>
+              <option value="Battery">Battery</option>
+              <option value="Meter">Meter</option>
+            </select>
+          </div>
+          <div>
+            <label for="a-loc">Location</label>
+            <input id="a-loc" name="location" type="text" [(ngModel)]="location" required>
+          </div>
+          <div>
+            <label for="a-cap">Capacity (kW)</label>
+            <input id="a-cap" name="capacityKW" type="number" step="0.01" min="0.01" [(ngModel)]="capacityKW" required>
+          </div>
+          <div>
+            <label for="a-status">Status</label>
+            <select id="a-status" name="status" [(ngModel)]="status" required>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="MAINTENANCE">Maintenance</option>
+              <option value="RETIRED">Retired</option>
+            </select>
+          </div>
+        </div>
+        @if (formError()) { <p class="form-error">{{ formError() }}</p> }
+        <div class="form-actions">
+          <button class="subtle" type="button" (click)="cancel()">Cancel</button>
+          <button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>

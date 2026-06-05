@@ -1,0 +1,36 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Reports — CSV Export</h1>
+  </div>
+  <form class="inline-form" style="margin-top:0;" (ngSubmit)="download()">
+    <div class="form-grid">
+      <div>
+        <label for="rep-scope">Scope</label>
+        <select id="rep-scope" name="scope" [(ngModel)]="scope" required>
+          <option value="assets">Assets</option>
+          <option value="schedules">Generation Schedules</option>
+          <option value="dispatch">Dispatch</option>
+          <option value="outages">Outages</option>
+          <option value="work-orders">Work Orders</option>
+          <option value="invoices">Invoices</option>
+        </select>
+      </div>
+      <div>
+        <label for="rep-from">From</label>
+        <input id="rep-from" name="from" type="date" [(ngModel)]="from">
+      </div>
+      <div>
+        <label for="rep-to">To</label>
+        <input id="rep-to" name="to" type="date" [(ngModel)]="to">
+      </div>
+    </div>
+    @if (errorMessage()) { <p class="form-error">{{ errorMessage() }}</p> }
+    @if (successMessage()) { <p class="form-success">{{ successMessage() }}</p> }
+    <div class="form-actions">
+      <button class="primary" type="submit" [disabled]="downloading()">
+        {{ downloading() ? 'Preparing…' : 'Download CSV' }}
+      </button>
+    </div>
+  </form>
+  <p class="muted" style="margin-top:16px;">Leave the date range blank to export everything. The From / To filter applies to the scope's primary timestamp (Commissioned, Start, Executed, Reported, Created).</p>
+</div>

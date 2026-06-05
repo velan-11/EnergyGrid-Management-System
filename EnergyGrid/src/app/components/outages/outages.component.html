@@ -1,0 +1,107 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Outage Control</h1>
+    @if (canWrite() && mode() === 'closed') {
+      <button class="primary" type="button" (click)="openAdd()">Report Outage</button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  } @else {
+    <div class="table-wrap">
+      <table class="flat">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Asset</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Reported At</th>
+            <th>Resolved At</th>
+            @if (canWrite()) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of rows(); track o.id) {
+            <tr>
+              <td>{{ o.id }}</td>
+              <td>{{ o.affectedDisplay }}</td>
+              <td>{{ o.severity }}</td>
+              <td>{{ o.status }}</td>
+              <td>{{ reportedCell(o) }}</td>
+              <td>{{ resolvedCell(o) }}</td>
+              @if (canWrite()) {
+                <td>
+                  <div class="btn-row">
+                    <button class="secondary small" type="button" (click)="openEdit(o)">Edit</button>
+                    <button class="danger small" type="button" (click)="delete(o)">Delete</button>
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="canWrite() ? 7 : 6"><span class="muted">No outages.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (mode() !== 'closed') {
+      <form class="inline-form" (ngSubmit)="submit()">
+        <h2>{{ mode() === 'edit' ? 'Edit Outage' : 'Report Outage' }}</h2>
+        <div class="form-grid">
+          <div>
+            <label for="o-asset">Asset</label>
+            @if (mode() === 'add' && assets().length > 0) {
+              <select id="o-asset" name="assetId" [(ngModel)]="assetId" required>
+                <option value="">Select an asset</option>
+                @for (a of assets(); track aId(a)) {
+                  <option [value]="aId(a)">{{ aLabel(a) }}</option>
+                }
+              </select>
+            } @else {
+              <input id="o-asset" name="assetId" type="number" min="1" [(ngModel)]="assetId" [disabled]="mode() === 'edit'">
+            }
+          </div>
+          <div>
+            <label for="o-sev">Severity</label>
+            <select id="o-sev" name="severity" [(ngModel)]="severity" required>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+          </div>
+          <div>
+            <label for="o-status">Status</label>
+            <select id="o-status" name="status" [(ngModel)]="status" (ngModelChange)="onStatusChange()" required>
+              <option value="OPEN">Open</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+          </div>
+          @if (mode() === 'edit' && isTerminal(status)) {
+            <div>
+              <label for="o-resolved-display">Resolved At</label>
+              <div id="o-resolved-display"
+                   style="background:#f0fdfa; border:1px solid #99f6e4; border-radius:6px; padding:8px; color:#0f172a;">
+                {{ resolvedDisplay() || 'Will be stamped on save' }}
+              </div>
+            </div>
+          }
+        </div>
+        @if (formError()) { <p class="form-error">{{ formError() }}</p> }
+        <div class="form-actions">
+          <button class="subtle" type="button" (click)="cancel()">Cancel</button>
+          <button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>
