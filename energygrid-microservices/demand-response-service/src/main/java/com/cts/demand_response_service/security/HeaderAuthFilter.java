@@ -13,6 +13,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts identity headers (X-Auth-Email / X-Auth-Role) injected by the
+ * upstream gateway and populates the SecurityContext. The role is mapped to
+ * a "ROLE_" authority so @PreAuthorize hasRole(...) checks work. Requests
+ * without both headers pass through unauthenticated.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 

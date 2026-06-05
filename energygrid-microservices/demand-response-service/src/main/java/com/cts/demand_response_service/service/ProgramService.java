@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Business logic for DR programs. Creates programs (serializing the
+ * enrollment criteria to JSON and recording an audit entry) and lists them.
+ */
 @Service
 public class ProgramService {
 

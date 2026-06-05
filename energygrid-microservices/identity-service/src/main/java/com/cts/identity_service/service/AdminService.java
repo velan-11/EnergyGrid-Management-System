@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Admin-only user management: approving pending registrations, listing users,
+ * and soft-deleting / restoring accounts.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -18,9 +22,8 @@ public class AdminService {
     private final AuditService auditService;
 
     public List<AdminUserResponseDTO> getPendingUsers(){
-        List<AdminUserResponseDTO> dto = userRepository.findByStatus(User.Status.PENDING).stream()
+        return userRepository.findByStatus(User.Status.PENDING).stream()
                 .map(UserMapper::toDTO).toList();
-        return dto;
     }
 
     public List<AdminUserResponseDTO> getAllUsers() {
@@ -41,6 +44,7 @@ public class AdminService {
     public String deleteUser(Long userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        // Soft delete: keep the row for audit history, just flag it and deactivate.
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
         user.setStatus(User.Status.INACTIVE);

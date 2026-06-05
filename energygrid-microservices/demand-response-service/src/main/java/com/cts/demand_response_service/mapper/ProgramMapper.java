@@ -4,6 +4,7 @@ package com.cts.demand_response_service.mapper;
 import com.cts.demand_response_service.dto.ResponseDTO.ProgramResponseDTO;
 import com.cts.demand_response_service.entity.DemandResponseProgram;
 
+/** Maps DemandResponseProgram entities to their response DTOs. */
 public class ProgramMapper {
 
     private ProgramMapper() {}

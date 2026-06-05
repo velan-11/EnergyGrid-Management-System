@@ -9,6 +9,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Stateless security setup: CSRF off, actuator open, everything else requires
+ * authentication supplied by HeaderAuthFilter. Method-level @PreAuthorize is
+ * enabled for per-endpoint role checks.
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity

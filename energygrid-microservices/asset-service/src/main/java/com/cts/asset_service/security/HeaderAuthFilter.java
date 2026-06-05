@@ -13,6 +13,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts identity headers injected by the upstream API gateway (X-Auth-Email / X-Auth-Role)
+ * and populates the Spring Security context so @PreAuthorize role checks can run.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 
@@ -26,6 +30,7 @@ public class HeaderAuthFilter extends OncePerRequestFilter {
         String email = request.getHeader("X-Auth-Email");
         String role  = request.getHeader("X-Auth-Role");
 
+        // Only authenticate when both headers are present; otherwise the request stays anonymous
         if (email != null && !email.isBlank()
                 && role != null && !role.isBlank()) {
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/** A single time-stamped metric reading reported by an asset (e.g. power output). */
 @Entity
 @Table(name = "TelemetryPoint")
 public class TelemetryPoint {

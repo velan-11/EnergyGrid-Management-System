@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Public authentication endpoints: login, registration, and credential recovery. */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor

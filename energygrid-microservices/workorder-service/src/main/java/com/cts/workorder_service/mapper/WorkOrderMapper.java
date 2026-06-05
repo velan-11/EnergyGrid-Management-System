@@ -5,6 +5,7 @@ import com.cts.workorder_service.entity.WorkOrder;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/** Maps an inbound {@link WorkOrderRequestDTO} to a {@link WorkOrder} entity via ModelMapper. */
 @Component
 public class WorkOrderMapper {
 

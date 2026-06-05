@@ -23,6 +23,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Default billing implementation. Enriches each bill with customer data
+ * from the identity-service via Feign, guarded by a circuit breaker and retry.
+ */
 @Service
 @RequiredArgsConstructor
 public class BillingServiceImpl
@@ -33,7 +37,7 @@ public class BillingServiceImpl
     private final UserServiceClient
             userServiceClient;
 
-    // ✅ Circuit Breaker + Retry
+    // Circuit Breaker + Retry around the identity-service call.
     @CircuitBreaker(
             name = "identityService",
             fallbackMethod = "identityFallback"

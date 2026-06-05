@@ -4,6 +4,10 @@ import com.cts.scheduling_service.dto.ResponseDTO.DispatchRecordResponseDTO;
 import com.cts.scheduling_service.entity.DispatchRecord;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converts between DispatchRecord entities and their response DTOs.
+ * Stringifies the status enum and guards against null entities/DTOs.
+ */
 @Component
 public class DispatchRecordMapper {
 

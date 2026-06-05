@@ -75,6 +75,6 @@ public class GlobalExceptionHandler {
     private static String summarise(String s) {
         int newline = s.indexOf('\n');
         String first = newline > 0 ? s.substring(0, newline) : s;
-        return first.length() > 200 ? first.substring(0, 200) + "…" : first;
+        return first.length() > 200 ? first.substring(0, 200) + "..." : first;
     }
 }

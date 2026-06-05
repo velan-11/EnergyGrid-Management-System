@@ -17,8 +17,11 @@ import org.springframework.security.access.prepost
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * REST endpoints for legacy customer billing records.
+ * Validates the request before delegating to the billing service.
+ */
 @RestController
 @RequestMapping("/api/billing")
 @RequiredArgsConstructor

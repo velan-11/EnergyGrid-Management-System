@@ -3,6 +3,7 @@ package com.cts.demand_response_service.mapper;
 import com.cts.demand_response_service.dto.ResponseDTO.EventResponseDTO;
 import com.cts.demand_response_service.entity.DemandResponseEvent;
 
+/** Maps DemandResponseEvent entities to their response DTOs. */
 public class EventMapper {
 
     private EventMapper() {}

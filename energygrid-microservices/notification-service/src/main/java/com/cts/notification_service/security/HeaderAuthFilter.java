@@ -13,6 +13,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts identity headers injected by the API gateway (X-Auth-Email / X-Auth-Role)
+ * and populates the Spring Security context for downstream authorization.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 

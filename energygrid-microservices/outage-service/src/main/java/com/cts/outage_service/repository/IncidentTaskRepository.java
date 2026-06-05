@@ -8,9 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/** Data access for incident tasks, keyed off the parent outage's FK. */
 public interface IncidentTaskRepository extends JpaRepository<IncidentTask, Long> {
 
     List<IncidentTask> findByOutageId(Long outageId);
+
+    // Bulk-delete all tasks for an outage; used by the outage cascade delete.
 
     @Modifying
     @Transactional

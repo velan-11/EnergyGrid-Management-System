@@ -13,6 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts the identity headers (X-Auth-Email / X-Auth-Role) injected by the
+ * gateway and builds a Spring Security authentication from them. The service
+ * itself does no token validation - that happened upstream at the gateway.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 

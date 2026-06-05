@@ -4,6 +4,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/** Outbound view of a work order (technician/evidence relations omitted). */
 @Getter
 @Setter
 public class WorkOrderResponseDTO {

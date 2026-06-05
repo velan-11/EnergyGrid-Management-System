@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation
 import org.springframework.web.bind.annotation
         .PathVariable;
 
+/** Feign client for looking up assets from the asset-service. */
 @FeignClient(
         name = "asset-service",
         url = "http://localhost:8082"

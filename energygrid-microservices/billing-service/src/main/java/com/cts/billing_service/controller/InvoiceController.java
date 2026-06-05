@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/** REST endpoints for creating, listing and updating invoices. */
 @RestController
 @RequestMapping("/api/invoices")
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class InvoiceController {
         if (dto.getCustomerId() == null || dto.getCustomerId() <= 0) {
             throw new BadRequestException("Invalid customer ID");
         }
+        // Require at least one amount source: explicit line items OR the legacy pair.
         boolean hasLineItems = dto.getLineItems() != null && !dto.getLineItems().isEmpty();
         boolean hasLegacyAmount = dto.getEnergyUsed() != null && dto.getUnitPrice() != null
                 && dto.getEnergyUsed() > 0 && dto.getUnitPrice() > 0;

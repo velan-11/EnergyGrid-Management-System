@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST API for the work-order lifecycle: create, read, update, delete,
+ * technician assignment, and status transitions. Access is role-gated per
+ * endpoint via {@code @PreAuthorize}.
+ */
 @RestController
 @RequestMapping("/api/work-orders")
 @RequiredArgsConstructor

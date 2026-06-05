@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * A scheduled demand-response event under a program, with a target load
+ * reduction and a lifecycle status (defaults to SCHEDULED on creation).
+ */
 @Entity
 @Table(name = "demand_response_events")
 @Data

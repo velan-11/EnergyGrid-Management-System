@@ -3,9 +3,9 @@ package com.cts.asset_service.dto.RequestDTO;
 import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/** Incoming payload for creating/updating an Asset; JSON keys are PascalCase. */
 public class AssetRequest {
 
     @JsonProperty("Name")

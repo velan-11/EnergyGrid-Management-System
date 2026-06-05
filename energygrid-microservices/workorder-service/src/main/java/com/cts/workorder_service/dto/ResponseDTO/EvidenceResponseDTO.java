@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/** Outbound view of an evidence record (owning work order omitted). */
 @Getter
 @Setter
 public class EvidenceResponseDTO {

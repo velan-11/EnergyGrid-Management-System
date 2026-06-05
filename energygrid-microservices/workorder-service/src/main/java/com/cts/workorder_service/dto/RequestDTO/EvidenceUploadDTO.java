@@ -3,6 +3,7 @@ package com.cts.workorder_service.dto.RequestDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+/** Validated payload for attaching evidence metadata to a work order. */
 @Data
 public class EvidenceUploadDTO {
 

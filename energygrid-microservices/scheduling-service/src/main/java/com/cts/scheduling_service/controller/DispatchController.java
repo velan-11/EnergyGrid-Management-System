@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST endpoints for executing dispatches against schedules and reading
+ * dispatch history. Delegates all logic to DispatchService.
+ */
 @RestController
 @RequestMapping("/api/dispatch")
 public class DispatchController {

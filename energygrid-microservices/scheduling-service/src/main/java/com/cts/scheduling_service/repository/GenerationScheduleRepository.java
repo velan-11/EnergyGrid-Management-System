@@ -10,7 +10,7 @@ import java.util.List;
 public interface GenerationScheduleRepository
         extends JpaRepository<GenerationSchedule, Long> {
 
-    // âœ… REQUIRED for: GET /api/schedules/asset/{assetId}
+    // Backs GET /api/schedules/asset/{assetId}
     List<GenerationSchedule> findByAssetId(Long assetId);
 }
 

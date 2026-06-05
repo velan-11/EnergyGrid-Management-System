@@ -10,6 +10,11 @@ import org.springframework.web.context.request
 import org.springframework.web.context.request
         .ServletRequestAttributes;
 
+/**
+ * Feign request interceptor that copies the caller's auth headers (and bearer
+ * token) onto outbound service-to-service calls so the downstream service can
+ * authenticate them just like a gateway-routed request.
+ */
 @Configuration
 public class FeignConfig {
 
@@ -46,7 +51,7 @@ public class FeignConfig {
                     requestTemplate.header(
                             "Authorization", token);
                     System.out.println(
-                            "✅ JWT forwarded to: "
+                            "JWT forwarded to: "
                                     + requestTemplate.url());
                 }
             }

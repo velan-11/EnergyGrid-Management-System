@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Fire-and-forget. Never throws — notification failures must not block outage flow. */
+/** Fire-and-forget. Never throws - notification failures must not block outage flow. */
 @Slf4j
 @Component
 @RequiredArgsConstructor

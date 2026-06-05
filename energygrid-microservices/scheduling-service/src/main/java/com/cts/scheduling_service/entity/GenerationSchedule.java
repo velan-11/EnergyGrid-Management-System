@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * A planned generation window for an asset (target output between startAt/endAt).
+ * Status transitions PLANNED -> ACTIVE (on first dispatch) -> CANCELLED.
+ */
 @Entity
 @Table(name = "generation_schedule")
 public class GenerationSchedule {
@@ -14,7 +18,7 @@ public class GenerationSchedule {
     @Column(name = "schedule_id")
     private Long scheduleId;
 
-    // âœ… MATCHES "AssetID" (case-sensitive)
+    // Column name is case-sensitive and must match the existing "AssetID" column.
     @Column(name = "AssetID")
     private Long assetId;
 

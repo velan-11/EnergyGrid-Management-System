@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST endpoints for demand-response programs: create a program and list
+ * all programs.
+ */
 @RestController
 @RequestMapping("/api/demand-response/programs")
 @RequiredArgsConstructor

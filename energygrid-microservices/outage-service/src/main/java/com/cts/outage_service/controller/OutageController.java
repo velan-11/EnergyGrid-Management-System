@@ -13,6 +13,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST endpoints for outages: create, list, fetch, partial update and delete.
+ * Role checks are enforced per-method via {@code @PreAuthorize}.
+ */
 @RestController
 @RequestMapping("/api/outages")
 @RequiredArgsConstructor

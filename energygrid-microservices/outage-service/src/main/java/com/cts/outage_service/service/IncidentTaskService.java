@@ -29,6 +29,11 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Business logic for incident tasks: creation, status/evidence updates, and
+ * cross-service calls (asset lookup, notifications) guarded by circuit breakers.
+ * Completing all tasks on an outage auto-resolves the parent outage.
+ */
 @Service
 @RequiredArgsConstructor
 public class IncidentTaskService {
@@ -42,7 +47,7 @@ public class IncidentTaskService {
     private final AssetServiceClient
             assetServiceClient;
 
-    // ✅ Circuit Breaker for Notification
+    // Circuit Breaker for Notification
     @CircuitBreaker(
             name = "notificationService",
             fallbackMethod = "notificationFallback"
@@ -67,11 +72,12 @@ public class IncidentTaskService {
                 .createNotification(dto);
 
         System.out.println(
-                "✅ Notification sent to user: "
+                "Notification sent to user: "
                         + userId);
     }
 
-    // ✅ Fallback for Notification
+    // Fallback when the notification service is unavailable
+    // (circuit open or retries exhausted): log and move on.
     public void notificationFallback(
             Long userId,
             Long entityId,
@@ -80,12 +86,12 @@ public class IncidentTaskService {
             String severity,
             Exception e) {
         System.out.println(
-                "⚠️ Notification service DOWN! " +
+                "Notification service DOWN! " +
                         "Could not notify user: " + userId +
                         " Message: " + message);
     }
 
-    // ✅ Circuit Breaker for Asset
+    // Circuit Breaker for Asset
     @CircuitBreaker(
             name = "assetService",
             fallbackMethod = "assetFallback"
@@ -97,12 +103,12 @@ public class IncidentTaskService {
                 .getAssetById(assetId);
     }
 
-    // ✅ Fallback for Asset
+    // Fallback for Asset: return a stub marked SERVICE_UNAVAILABLE
     public AssetDTO assetFallback(
             Long assetId,
             Exception e) {
         System.out.println(
-                "⚠️ Asset service DOWN! " +
+                "Asset service DOWN! " +
                         "Fallback for: " + assetId);
         AssetDTO fallback = new AssetDTO();
         fallback.setAssetId(assetId);
@@ -111,7 +117,7 @@ public class IncidentTaskService {
         return fallback;
     }
 
-    // ✅ CREATE TASK
+    // CREATE TASK: validate, persist with ASSIGNED status, then notify assignee
     public IncidentTask createIncidentTask(
             IncidentTaskDTO dto) {
 
@@ -143,7 +149,7 @@ public class IncidentTaskService {
         IncidentTask savedTask =
                 incidentTaskRepository.save(task);
 
-        // ✅ Send notification via Feign
+        // Send notification via Feign
         sendNotification(
                 savedTask.getAssignedTo(),
                 savedTask.getId(),
@@ -156,7 +162,7 @@ public class IncidentTaskService {
         return savedTask;
     }
 
-    // ✅ GET BY ID
+    // GET BY ID
     public IncidentTask getById(Long id) {
         return incidentTaskRepository
                 .findById(id)
@@ -165,12 +171,12 @@ public class IncidentTaskService {
                                 "Task not found"));
     }
 
-    // ✅ GET ALL
+    // GET ALL
     public List<IncidentTask> getAll() {
         return incidentTaskRepository.findAll();
     }
 
-    // ✅ UPDATE STATUS
+    // UPDATE STATUS
     public IncidentTask updateStatus(
             Long id, String status) {
 
@@ -195,7 +201,7 @@ public class IncidentTaskService {
 
         task.setStatus(status.toUpperCase());
 
-        // ✅ If completed → notify
+        // If completed, stamp completedAt and notify the assignee
         if (status.equalsIgnoreCase("COMPLETED")) {
             task.setCompletedAt(Instant.now());
 
@@ -212,7 +218,7 @@ public class IncidentTaskService {
 
         // Propagate completion to the parent outage. Previously the
         // outage stayed OPEN forever even after the technician finished
-        // the work — operators had to manually flip it, which was easy
+        // the work - operators had to manually flip it, which was easy
         // to forget. Auto-resolve only when EVERY task on the outage
         // is COMPLETED, so partial progress doesn't prematurely close
         // the outage.
@@ -244,13 +250,13 @@ public class IncidentTaskService {
             }
             outage.setStatus("RESOLVED");
             // Stamp the resolution moment so Reports MTTR can compute
-            // resolvedAt − reportedAt instead of (now − reportedAt).
+            // resolvedAt - reportedAt instead of (now - reportedAt).
             outage.setResolvedAt(java.time.Instant.now());
             outageRepository.save(outage);
         });
     }
 
-    // ✅ UPDATE EVIDENCE
+    // UPDATE EVIDENCE
     public IncidentTask updateEvidence(
             Long id, String evidenceURI) {
 

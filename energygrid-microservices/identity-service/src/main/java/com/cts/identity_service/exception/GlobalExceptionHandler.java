@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Translates exceptions thrown anywhere in the service into consistent JSON
+ * error responses ({status, error, message}) with appropriate HTTP codes.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

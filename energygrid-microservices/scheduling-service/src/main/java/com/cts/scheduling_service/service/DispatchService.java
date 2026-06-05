@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Executes dispatches against a schedule: derives a SUCCESS/PARTIAL/FAILED
+ * status from the actual-vs-target ratio, persists the record, flips the
+ * schedule to ACTIVE, and fires best-effort notifications plus an audit entry.
+ */
 @Service
 public class DispatchService {
 

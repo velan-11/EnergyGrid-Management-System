@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/** Stateless security setup: actuator is open, everything else requires gateway-supplied auth. */
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity

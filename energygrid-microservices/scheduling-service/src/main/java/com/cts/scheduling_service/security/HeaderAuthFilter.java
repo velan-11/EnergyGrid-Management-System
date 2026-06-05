@@ -13,6 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts the identity headers (X-Auth-Email / X-Auth-Role) injected by the
+ * upstream gateway and populates the Spring SecurityContext with a single
+ * ROLE_&lt;role&gt; authority so @PreAuthorize checks work on each request.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 

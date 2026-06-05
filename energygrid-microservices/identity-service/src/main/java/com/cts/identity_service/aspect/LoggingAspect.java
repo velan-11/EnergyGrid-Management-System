@@ -4,6 +4,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
+/** Logs entry into and successful return from every service-layer method. */
 @Aspect
 @Component
 public class LoggingAspect {

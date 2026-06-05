@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Core work-order business logic: persistence, status normalisation,
+ * technician assignment (with on-the-fly Technician caching), notification
+ * fan-out, and audit logging for every mutating operation.
+ */
 @Service
 public class WorkOrderServiceImpl implements WorkOrderService {
 

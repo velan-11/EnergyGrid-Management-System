@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+/** Validated payload for creating or updating a work order. */
 @Data
 public class WorkOrderRequestDTO {
 

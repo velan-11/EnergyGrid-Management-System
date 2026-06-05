@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Business logic for DR events. Handles creation (linked to a program and
+ * stamped with the caller's email) and lifecycle transitions between the
+ * SCHEDULED / ACTIVE / COMPLETED / CANCELLED states.
+ */
 @Service
 @RequiredArgsConstructor
 public class EventService {

@@ -5,6 +5,7 @@ import com.cts.workorder_service.entity.MaintenanceEvidence;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/** Maps an inbound {@link EvidenceUploadDTO} to a {@link MaintenanceEvidence} entity via ModelMapper. */
 @Component
 public class EvidenceMapper {
 

@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Records payments against invoices and keeps the invoice status in sync
+ * (PAID once fully covered, otherwise PARTIAL).
+ */
 @Service
 public class PaymentService {
 
@@ -36,6 +40,8 @@ public class PaymentService {
         Payment payment = mapper.toEntity(dto, invoice);
         invoice.getPayments().add(payment);
 
+        // Mark PAID only when cumulative payments cover the invoice total;
+        // any shortfall leaves it PARTIAL so further payments are allowed.
         double paidSoFar = sumExistingPayments(invoice) + dto.getAmount();
         double total = invoice.getAmount() == null ? 0.0 : invoice.getAmount();
 

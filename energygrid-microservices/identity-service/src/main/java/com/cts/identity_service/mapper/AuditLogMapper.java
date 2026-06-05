@@ -1,6 +1,7 @@
 package com.cts.identity_service.mapper;
 import com.cts.identity_service.dto.ResponseDTO.AuditLogResponseDTO;
 import com.cts.identity_service.entity.AuditLog;
+/** Maps {@link AuditLog} entities (with their owning user) to response DTOs. */
 public class AuditLogMapper {
 
     public static AuditLogResponseDTO toDTO(AuditLog auditLog) {

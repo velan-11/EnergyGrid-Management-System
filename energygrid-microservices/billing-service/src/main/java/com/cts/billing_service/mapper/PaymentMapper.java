@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** Builds a Payment entity from a request DTO and its parent Invoice. */
 @Component
 public class PaymentMapper {
 

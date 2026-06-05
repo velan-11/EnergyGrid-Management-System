@@ -10,7 +10,7 @@ import java.util.List;
 public interface DispatchRecordRepository
         extends JpaRepository<DispatchRecord, Long> {
 
-    // âœ… REQUIRED for: GET /api/dispatch/schedule/{scheduleId}
+    // Backs GET /api/dispatch/schedule/{scheduleId}
     List<DispatchRecord> findByScheduleId(Long scheduleId);
 }
 

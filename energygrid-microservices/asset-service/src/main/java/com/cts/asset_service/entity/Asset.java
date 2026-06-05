@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/** A physical grid asset (Solar / Wind / Battery / Meter) persisted to the Asset table. */
 @Entity
 @Table(name = "Asset")
 public class Asset {

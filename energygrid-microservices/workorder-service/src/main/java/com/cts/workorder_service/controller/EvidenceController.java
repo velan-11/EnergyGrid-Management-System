@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * REST API for maintenance-evidence records attached to a work order
+ * (the uploaded file URL, notes, and review status). The binary file itself
+ * is handled by {@link UploadController}; this controller stores the metadata.
+ */
 @RestController
 @RequestMapping("/api/evidence")
 @RequiredArgsConstructor

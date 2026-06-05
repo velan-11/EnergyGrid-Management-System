@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.Instant;
 
+/**
+ * A unit of field work for an outage. Linked to its parent via the plain
+ * {@code outageId} FK. Status flows ASSIGNED -> IN_PROGRESS -> COMPLETED.
+ */
 @Entity
 @Table(name = "incident_tasks")
 @NoArgsConstructor

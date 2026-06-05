@@ -5,16 +5,16 @@ import com.cts.outage_service.entity.IncidentTask;
 import com.cts.outage_service.service.IncidentTaskService;
 import java.util.List;
 
-
 import lombok.RequiredArgsConstructor;
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-
+/**
+ * REST endpoints for incident tasks - the field work units attached to an
+ * outage. Covers create, lookup, status transitions and evidence upload.
+ */
 @RestController
 @RequestMapping("/api/incident-tasks")
 @RequiredArgsConstructor

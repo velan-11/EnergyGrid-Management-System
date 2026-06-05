@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+
+/**
+ * A participant's enrollment in a single DR event. The (event, email) pair
+ * is unique so a participant cannot join the same event twice.
+ */
 @Entity
 @Table(
         name = "demand_response_participation",

@@ -6,6 +6,11 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * A maintenance work order against an asset. Carries lifecycle status, the
+ * assigned technician, and the evidence uploaded against it. Evidence is the
+ * managed side of the JSON reference so the order serialises its evidence list.
+ */
 @Entity
 @Table(name = "work_orders")
 @Data

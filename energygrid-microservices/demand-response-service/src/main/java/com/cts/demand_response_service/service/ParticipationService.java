@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Business logic for participant enrollment in DR events: joining,
+ * reporting achieved load reduction, verification, and opting out.
+ * Status moves REGISTERED -> REPORTED -> VERIFIED, or to OPTED_OUT.
+ */
 @Service
 @RequiredArgsConstructor
 public class ParticipationService {
@@ -87,6 +92,8 @@ public class ParticipationService {
         DemandResponseParticipation p = participationRepository.findById(participationId)
                 .orElseThrow(() -> new RuntimeException("Participation not found"));
 
+        // Opting out discards any previously reported/verified figures so the
+        // record can't be counted toward the event's reduction totals.
         p.setStatus(DemandResponseParticipation.ParticipationStatus.OPTED_OUT);
         p.setReportedReductionKW(null);
         p.setVerifiedAt(null);

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.Instant;
 
+/** Persisted notification record shown to a user; defaults to UNREAD on create. */
 @Entity
 @Data
 public class Notification {
@@ -36,6 +37,7 @@ public class Notification {
 
     private Instant expiresAt;
 
+    // Stamp creation time and ensure a default status before the row is inserted.
     @PrePersist
     public void prePersist(){
         this.createdAt = Instant.now();

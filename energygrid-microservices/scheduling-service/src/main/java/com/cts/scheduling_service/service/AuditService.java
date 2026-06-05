@@ -8,10 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * One-call audit-log writer. Used by the controllers and services in this
- * microservice. Failures are caught and swallowed — auditing must never
- * break a successful business operation; in production this would publish
- * to an out-of-band log sink instead.
+ * One-call audit-log writer plus read access for the admin audit page.
+ * Writes are best-effort — failures are swallowed so auditing never breaks
+ * a successful business operation.
  */
 @Service
 public class AuditService {
@@ -25,8 +24,7 @@ public class AuditService {
     }
 
     public void log(Long userId, String userName,
-                    String action, String resourceType, Long resourceId,
-                    String details) {
+                    String action, String resourceType, Long resourceId, String details) {
         try {
             AuditLog log = new AuditLog();
             log.setUserId(userId);
@@ -42,5 +40,19 @@ public class AuditService {
         }
     }
 
+    public Page<AuditLog> list(int page, int size) {
+        return repo.findAllByOrderByTimestampDesc(pageable(page, size));
+    }
 
+    public Page<AuditLog> listByUser(Long userId, int page, int size) {
+        return repo.findByUserIdOrderByTimestampDesc(userId, pageable(page, size));
+    }
+
+    public Page<AuditLog> listByResource(String resourceType, int page, int size) {
+        return repo.findByResourceTypeOrderByTimestampDesc(resourceType, pageable(page, size));
+    }
+
+    private Pageable pageable(int page, int size) {
+        return PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 200));
+    }
 }

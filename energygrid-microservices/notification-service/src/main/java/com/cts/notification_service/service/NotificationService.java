@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Core notification logic: persists notifications, exposes lookups, and handles
+ * read-state transitions. Derives a display type from severity when not supplied.
+ */
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -28,7 +32,7 @@ public class NotificationService {
         notificationRepository.save(n);
     }
 
-    /** Rich create — used by inter-service publishers. */
+    /** Rich create - used by inter-service publishers. */
     public Notification createNotification(NotificationDTO dto) {
         Notification n = new Notification();
         n.setUserId(dto.getUserId());
@@ -70,6 +74,7 @@ public class NotificationService {
         return notificationRepository.markAllAsReadForUser(userId);
     }
 
+    // Maps a severity level to the notification's display type (INFO/WARNING/ALERT).
     private static String inferTypeFromSeverity(String severity) {
         if (severity == null) return "INFO";
         switch (severity.toUpperCase()) {

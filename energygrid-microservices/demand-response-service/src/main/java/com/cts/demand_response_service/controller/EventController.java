@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST endpoints for demand-response events: creation, listing, and
+ * lifecycle status changes (activate / complete / cancel).
+ */
 @RestController
 @RequestMapping("/api/demand-response/events")
 @RequiredArgsConstructor

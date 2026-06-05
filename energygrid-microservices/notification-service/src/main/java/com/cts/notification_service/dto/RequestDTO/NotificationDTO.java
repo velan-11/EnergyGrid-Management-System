@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** Request payload for publishing a notification from another service. */
 @Data
 @Builder
 @AllArgsConstructor

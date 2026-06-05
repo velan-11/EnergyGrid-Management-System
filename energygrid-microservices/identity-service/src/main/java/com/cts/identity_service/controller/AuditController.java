@@ -7,6 +7,7 @@ import com.cts.identity_service.service.AuditService;
 
 import java.util.List;
 
+/** Read-only audit-log endpoints, restricted to ADMIN and AUDITOR roles. */
 @RestController
 @RequestMapping("/api/identity/audit")
 @PreAuthorize("hasAnyRole('ADMIN','AUDITOR')")

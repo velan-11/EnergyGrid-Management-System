@@ -2,7 +2,6 @@ package com.cts.identity_service.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.Data;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,6 +9,11 @@ import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * Generates and parses HS256-signed JWTs. The token subject is the user's email
+ * and a custom "role" claim carries the authority. Secret and expiry are
+ * supplied via application properties.
+ */
 @Component
 public class JWTUtil {
     @Value("${jwt.secret}")

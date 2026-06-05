@@ -8,6 +8,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Loads users for Spring Security by email. Non-ACTIVE accounts are marked
+ * disabled so authentication is rejected.
+ */
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
@@ -22,6 +26,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
         User user = userRepository.findByEmail(username).orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: " + username));
+        // Only ACTIVE users may authenticate; everyone else is treated as disabled.
         boolean isActive = user.getStatus() == User.Status.ACTIVE;
 
         return org.springframework.security.core.userdetails.User.builder()

@@ -3,6 +3,10 @@ import com.cts.identity_service.dto.RequestDTO.UserSummaryDTO;
 import com.cts.identity_service.dto.ResponseDTO.AdminUserResponseDTO;
 import com.cts.identity_service.entity.User;
 
+/**
+ * Converts {@link User} entities into the DTOs exposed by the API. Static-only
+ * utility; the private constructor prevents instantiation.
+ */
 public class UserMapper {
 
     private UserMapper() {

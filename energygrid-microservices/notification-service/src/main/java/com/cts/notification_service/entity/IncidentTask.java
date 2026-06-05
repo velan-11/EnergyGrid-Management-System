@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.Instant;
 
+/** Persisted incident task tied to an outage, tracking assignment and completion state. */
 @Entity
 @Table(name = "incident_tasks")
 @NoArgsConstructor

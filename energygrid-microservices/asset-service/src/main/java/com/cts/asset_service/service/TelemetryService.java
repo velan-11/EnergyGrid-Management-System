@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** Read-only access to an asset's telemetry history, ordered oldest-to-newest. */
 @Service
 public class TelemetryService {
 

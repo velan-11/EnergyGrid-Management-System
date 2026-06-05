@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+/**
+ * REST endpoints for participant enrollment in DR events: join, report
+ * load reduction, verify, opt-out, and list participants per event.
+ * Verification is restricted to ADMIN/OPERATOR; listing also allows AUDITOR.
+ */
 @RestController
 @RequestMapping("/api/demand-response/participation")
 @RequiredArgsConstructor

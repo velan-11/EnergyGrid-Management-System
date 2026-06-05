@@ -5,6 +5,7 @@ import com.cts.billing_service.entity.Invoice;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/** Maps an InvoiceRequestDTO to an Invoice entity via ModelMapper. */
 @Component
 public class InvoiceMapper {
 

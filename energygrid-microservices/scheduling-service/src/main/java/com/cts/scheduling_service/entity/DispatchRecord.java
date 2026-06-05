@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
+/**
+ * A single dispatch execution against a schedule. Stores the actual output, a
+ * frozen snapshot of the schedule's target, the derived status, and denormalised
+ * operator details so list views avoid extra lookups.
+ */
 @Entity
 @Table(name = "dispatch_record")
 public class DispatchRecord {

@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Periodically scans incident tasks and raises HIGH-severity alerts for any
+ * task that has stayed in ASSIGNED state for too long (overdue).
+ */
 @Service
 @RequiredArgsConstructor
 public class AlertService {
@@ -20,6 +24,7 @@ public class AlertService {
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
 
+    // Runs every 1 minute; flags tasks assigned more than 24h ago and still untouched.
     @Scheduled(fixedRate = 60000)
     public void checkOverdueTasks() {
 
@@ -31,7 +36,7 @@ public class AlertService {
                     task.getAssignedAt() != null &&
                     task.getAssignedAt().isBefore(Instant.now().minusSeconds(86400))) {
 
-                // âœ… CHECK DUPLICATE
+                // Avoid duplicate alerts: only notify if no ALERT for this task exists yet.
                 List<Notification> existing = notificationRepository.findByUserId(task.getAssignedTo());
 
                 boolean alreadySent = existing.stream()

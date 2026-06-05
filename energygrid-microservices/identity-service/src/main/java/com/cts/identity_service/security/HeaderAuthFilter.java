@@ -13,6 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts identity headers injected by the upstream API gateway. The gateway
+ * validates the JWT, so this service only reads the resulting X-Auth-* headers
+ * and populates the SecurityContext with the user's email and granted role.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 
@@ -26,9 +31,12 @@ public class HeaderAuthFilter extends OncePerRequestFilter {
         String email = request.getHeader("X-Auth-Email");
         String role  = request.getHeader("X-Auth-Role");
 
+        // Only authenticate when the gateway supplied both headers; otherwise the
+        // request stays anonymous and is rejected by the authorization rules.
         if (email != null && !email.isBlank()
                 && role != null && !role.isBlank()) {
 
+            // Spring expects authorities prefixed with "ROLE_" for hasRole() checks.
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
                             email,

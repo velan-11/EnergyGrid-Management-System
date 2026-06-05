@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Builds invoices from line items (or legacy energyUsed/unitPrice),
+ * applies tax, persists them, and emits notification + audit events.
+ */
 @Service
 public class InvoiceService {
 

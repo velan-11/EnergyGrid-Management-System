@@ -4,6 +4,10 @@ import com.cts.scheduling_service.dto.ResponseDTO.GenerationScheduleResponseDTO;
 import com.cts.scheduling_service.entity.GenerationSchedule;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converts between GenerationSchedule entities and their response DTOs.
+ * Stringifies the status enum and guards against null entities/DTOs.
+ */
 @Component
 public class GenerationScheduleMapper {
 

@@ -25,6 +25,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Business logic for outages: create/read, partial patch (status/severity),
+ * and cascade delete. Emits notifications and audit records on state changes;
+ * stamps resolvedAt on RESOLVED transitions to feed the Reports MTTR metric.
+ */
 @Service
 @RequiredArgsConstructor
 public class OutageService {
@@ -39,7 +44,7 @@ public class OutageService {
             notifications;
     private final AuditService audit;
 
-    // ✅ Circuit Breaker + Retry
+    // Circuit Breaker + Retry
     @CircuitBreaker(
             name = "assetService",
             fallbackMethod = "assetFallback"
@@ -54,12 +59,12 @@ public class OutageService {
                 .getAssetById(assetId);
     }
 
-    // ✅ Fallback
+    // Fallback: return a stub asset marked SERVICE_UNAVAILABLE
     public AssetDTO assetFallback(
             Long assetId,
             Exception e) {
         System.out.println(
-                "⚠️ Asset service DOWN! " +
+                "Asset service DOWN! " +
                         "Fallback for: " + assetId);
         AssetDTO fallback = new AssetDTO();
         fallback.setAssetId(assetId);
@@ -68,7 +73,8 @@ public class OutageService {
         return fallback;
     }
 
-    // ✅ Create Outage
+    // Create Outage: validate, serialise affected assets to JSON, open it,
+    // then notify the reporter and write an audit record.
     public Outage createOutage(OutageDTO dto) {
 
         if (dto.getAffectedAssets() == null
@@ -142,7 +148,7 @@ public class OutageService {
         return saved;
     }
 
-    // ✅ Get All Outages
+    // Get All Outages
     public List<Outage> findAll() {
         return outageRepository.findAll();
     }

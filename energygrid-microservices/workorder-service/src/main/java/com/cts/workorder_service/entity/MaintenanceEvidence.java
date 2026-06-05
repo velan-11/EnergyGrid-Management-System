@@ -5,6 +5,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+/**
+ * Evidence attached to a work order: the uploaded file URL, free-text notes,
+ * a SHA-256 for tamper checking, and review status. The back-reference to the
+ * owning work order is {@code @JsonIgnore}d to avoid serialisation cycles.
+ */
 @Entity
 @Table(name = "maintenance_evidence")
 @Data

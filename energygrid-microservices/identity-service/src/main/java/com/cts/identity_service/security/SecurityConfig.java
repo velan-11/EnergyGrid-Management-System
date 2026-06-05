@@ -15,6 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Stateless security setup: CSRF disabled (token-based, no sessions), the public
+ * auth/actuator endpoints are open, everything else requires authentication via
+ * the gateway-trusting {@link HeaderAuthFilter}.
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity

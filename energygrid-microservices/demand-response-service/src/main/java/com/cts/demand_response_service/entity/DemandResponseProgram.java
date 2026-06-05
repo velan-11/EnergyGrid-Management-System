@@ -5,6 +5,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * A demand-response program (e.g. peak shaving, load shifting) that events
+ * run under. Enrollment criteria are stored as a raw JSON string; status
+ * defaults to DRAFT on creation.
+ */
 @Entity
 @Table(name = "demand_response_programs")
 @Data

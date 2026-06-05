@@ -10,6 +10,11 @@ import org.springframework.web.context.request
 import org.springframework.web.context.request
         .ServletRequestAttributes;
 
+/**
+ * Forwards the gateway-injected identity headers (and the JWT) onto outbound
+ * Feign calls so downstream services can authenticate service-to-service
+ * requests that never pass back through the gateway.
+ */
 @Configuration
 public class FeignConfig {
 
@@ -45,9 +50,6 @@ public class FeignConfig {
                 if (token != null) {
                     requestTemplate.header(
                             "Authorization", token);
-                    System.out.println(
-                            "✅ JWT forwarded to: "
-                                    + requestTemplate.url());
                 }
             }
         };

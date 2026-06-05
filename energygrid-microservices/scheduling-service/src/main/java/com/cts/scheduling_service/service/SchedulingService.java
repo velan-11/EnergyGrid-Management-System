@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Manages generation schedules: validates input, confirms the asset exists via
+ * a resilient Feign call (circuit breaker + retry), and handles create / query /
+ * cancel, emitting best-effort notifications and audit entries along the way.
+ */
 @Service
 @RequiredArgsConstructor
 public class SchedulingService {
@@ -26,7 +31,7 @@ public class SchedulingService {
     private final NotificationPublisher notifications;
     private final AuditService audit;
 
-    // ✅ Circuit Breaker + Retry
+    // Resilient asset lookup: trips to assetFallback on repeated failures.
     @CircuitBreaker(
             name = "assetService",
             fallbackMethod = "assetFallback"
@@ -39,7 +44,7 @@ public class SchedulingService {
         return assetServiceClient.getAssetById(assetId);
     }
 
-    // ✅ Fallback method
+    // Fallback when asset-service is unavailable — surfaces a 502/503 to the caller.
     public AssetDTO assetFallback(Long assetId, Exception e) {
         throw new ExternalServiceException(
                 "asset-service",
@@ -47,7 +52,6 @@ public class SchedulingService {
         );
     }
 
-    // ✅ Create Schedule with validation
     public GenerationSchedule createSchedule(ScheduleRequestDto dto) {
         // Validate input data
         validateScheduleRequestDto(dto);
@@ -92,12 +96,10 @@ public class SchedulingService {
         catch (NumberFormatException e) { return null; }
     }
 
-    // ✅ Get All Schedules
     public List<GenerationSchedule> getAllSchedules() {
         return repository.findAll();
     }
 
-    // ✅ Get Schedule By ID
     public GenerationSchedule getScheduleById(Long id) {
         if (id == null || id <= 0) {
             throw new InvalidDataException("id", "Must be a positive number");
@@ -106,7 +108,6 @@ public class SchedulingService {
                 .orElseThrow(() -> new ResourceNotFoundException("GenerationSchedule", "scheduleId", id));
     }
 
-    // ✅ Get Schedules By Asset
     public List<GenerationSchedule> getSchedulesByAsset(Long assetId) {
         if (assetId == null || assetId <= 0) {
             throw new InvalidDataException("assetId", "Must be a positive number");
@@ -114,7 +115,6 @@ public class SchedulingService {
         return repository.findByAssetId(assetId);
     }
 
-    // ✅ Cancel Schedule
     public GenerationSchedule cancelSchedule(Long id) {
         GenerationSchedule schedule = getScheduleById(id);
 
@@ -143,7 +143,6 @@ public class SchedulingService {
         return saved;
     }
 
-    // ✅ Utility method for validation
     private void validateScheduleRequestDto(ScheduleRequestDto dto) {
         if (dto.getAssetId() == null || dto.getAssetId() <= 0) {
             throw new InvalidDataException("assetId", "Must be a positive number");

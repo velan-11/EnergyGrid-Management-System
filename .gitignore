@@ -1,0 +1,10 @@
+# Runtime logs
+**/run.log
+*.log
+
+# Build output
+**/target/
+
+# IDE
+.idea/
+*.iml

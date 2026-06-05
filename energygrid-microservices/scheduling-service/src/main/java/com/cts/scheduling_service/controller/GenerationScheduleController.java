@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST endpoints for creating, querying and cancelling generation schedules.
+ * Delegates all logic to SchedulingService.
+ */
 @RestController
 @RequestMapping("/api/schedules")
 public class GenerationScheduleController {

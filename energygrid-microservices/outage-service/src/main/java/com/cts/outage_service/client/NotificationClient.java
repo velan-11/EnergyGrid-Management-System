@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
+/** Feign client that posts notifications as a generic key/value map body. */
 @FeignClient(
         name = "notification-service-client",
         url = "http://localhost:8088"

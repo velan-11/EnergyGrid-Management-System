@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Business logic for maintenance-evidence records: upload, lookup, update,
+ * and a JPQL-backed hard delete that sidesteps Hibernate cascade quirks.
+ */
 @Service
 public class EvidenceServiceImpl implements EvidenceService {
 
@@ -31,11 +35,16 @@ public class EvidenceServiceImpl implements EvidenceService {
         WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
                 .orElseThrow(() -> new WorkOrderNotFoundException(dto.getWorkOrderId()));
 
+        // Map the DTO, then force server-controlled fields: clear any client
+        // id so we always insert, stamp the time, and default the uploader /
+        // status when the client omits them.
         MaintenanceEvidence ev = mapper.toEntity(dto);
         ev.setId(null);
         ev.setUploadedAt(LocalDateTime.now());
         ev.setUploadedBy(dto.getUploadedBy() != null ? dto.getUploadedBy() : "SYSTEM");
         ev.setStatus(dto.getStatus() != null ? dto.getStatus() : "UPLOADED");
+        // Real SHA-256 is computed by UploadController on the raw file; this
+        // metadata record only carries a placeholder when none was supplied.
         ev.setSha256("dummy-hash");
         ev.setWorkOrder(workOrder);
         return repository.save(ev);

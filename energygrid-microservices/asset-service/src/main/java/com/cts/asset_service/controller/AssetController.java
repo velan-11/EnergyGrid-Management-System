@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+/** REST endpoints for managing assets; access is gated per-method by role via @PreAuthorize. */
 @RestController
 @RequestMapping("/api/assets")
 public class AssetController {

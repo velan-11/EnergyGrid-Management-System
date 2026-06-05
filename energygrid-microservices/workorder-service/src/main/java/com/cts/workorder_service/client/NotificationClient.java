@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
+/** Feign client for pushing notifications to the notification-service. */
 @FeignClient(
         name = "notification-service-client",
         url = "http://localhost:8088"

@@ -10,6 +10,10 @@ import org.springframework.web.context.request
 import org.springframework.web.context.request
         .ServletRequestAttributes;
 
+/**
+ * Forwards the caller's identity/auth headers onto outbound Feign requests so
+ * service-to-service calls (which skip the gateway) still authenticate downstream.
+ */
 @Configuration
 public class FeignConfig {
 

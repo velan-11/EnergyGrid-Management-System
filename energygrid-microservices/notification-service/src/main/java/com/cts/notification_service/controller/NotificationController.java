@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST endpoints for creating, listing, and managing the read-state of notifications.
+ */
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor

@@ -13,6 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trusts the identity headers the API gateway injects (X-Auth-Email /
+ * X-Auth-Role) and populates the Spring Security context from them. This
+ * service does not validate JWTs itself; the gateway is the trust boundary.
+ */
 @Component
 public class HeaderAuthFilter extends OncePerRequestFilter {
 

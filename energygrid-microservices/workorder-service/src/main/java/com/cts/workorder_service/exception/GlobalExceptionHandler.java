@@ -11,10 +11,15 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Translates service/validation exceptions into a consistent JSON error body
+ * ({ timestamp, status, error, message }) so the frontend can render failures
+ * uniformly regardless of which layer threw.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ✅ Work Order Not Found
+    // Work Order Not Found
     @ExceptionHandler(
             WorkOrderNotFoundException.class)
     public ResponseEntity<Map<String, Object>>
@@ -27,7 +32,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Technician Not Found
+    // Technician Not Found
     @ExceptionHandler(
             TechnicianNotFoundException.class)
     public ResponseEntity<Map<String, Object>>
@@ -40,7 +45,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Evidence Not Found
+    // Evidence Not Found
     @ExceptionHandler(
             EvidenceNotFoundException.class)
     public ResponseEntity<Map<String, Object>>
@@ -53,7 +58,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Bad Request
+    // Bad Request
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, Object>>
     handleBadRequest(
@@ -65,7 +70,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Validation Errors
+    // Validation Errors
     @ExceptionHandler(
             MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>>
@@ -98,7 +103,7 @@ public class GlobalExceptionHandler {
                 .body(body);
     }
 
-    // ✅ Runtime Exception
+    // Runtime Exception
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>>
     handleRuntime(RuntimeException ex) {
@@ -109,7 +114,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Generic Exception
+    // Generic Exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>>
     handleGeneric(Exception ex) {
@@ -121,7 +126,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ✅ Helper method
+    // Helper method
     private ResponseEntity<Map<String, Object>>
     buildError(
             HttpStatus status,

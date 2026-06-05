@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** REST endpoints for recording and querying invoice payments. */
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor

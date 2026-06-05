@@ -6,11 +6,11 @@ import com.cts.asset_service.repository.AssetRepository;
 import com.cts.asset_service.dto.RequestDTO.AssetRequest;
 import com.cts.asset_service.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** Business logic for asset CRUD; persists changes and records audit trail entries. */
 @Service
 public class AssetService {
 
@@ -43,7 +43,6 @@ public class AssetService {
     }
 
 
-    // UPDATE
     public Asset updateAsset(Long assetId, AssetRequest req) {
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found: " + assetId));
@@ -69,8 +68,8 @@ public class AssetService {
 
 
 
-    // DELETE
     public void deleteAsset(Long assetId) {
+        // Fail fast if the asset is missing so callers get a 404 rather than a silent no-op
         if (!assetRepository.existsById(assetId)) {
             throw new ResourceNotFoundException("Asset not found: " + assetId);
         }
