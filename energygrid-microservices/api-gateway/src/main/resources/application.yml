@@ -1,0 +1,145 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  codec:
+    # Allow multipart bodies up to ~12MB through the gateway (evidence uploads).
+    max-in-memory-size: 12MB
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: identity-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+
+        - id: admin-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/admin/**
+
+        - id: audit-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/identity/**
+
+        - id: asset-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/assets/**
+
+        - id: telemetry-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/telemetry/**
+
+        - id: scheduling-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/schedules/**
+
+        - id: dispatch-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/dispatch/**
+
+        - id: demand-response-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/demand-response/**
+
+        - id: outage-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/outages/**
+
+        - id: incident-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/incident-tasks/**
+
+        - id: billing-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/billing/**
+
+        - id: invoice-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/invoices/**
+
+        - id: payment-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/payments/**
+
+        - id: workorder-service
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/work-orders/**
+
+        - id: evidence-service
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/evidence/**
+
+        - id: upload-service
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/upload/**
+
+        - id: notification-service
+          uri: http://localhost:8088
+          predicates:
+            - Path=/api/notifications/**
+
+        # ─── Federated audit log routes ──────────────────────────────────
+        # Each service publishes under /api/audit/{short-name}; the frontend
+        # admin/audit page fans out to all of them in parallel and merges.
+        - id: audit-scheduling
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/audit/scheduling/**
+        - id: audit-outage
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/audit/outage/**
+        - id: audit-workorder
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/audit/workorder/**
+        - id: audit-billing
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/audit/billing/**
+        - id: audit-asset
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/audit/asset/**
+        - id: audit-dr
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/audit/dr/**
+        - id: audit-notification
+          uri: http://localhost:8088
+          predicates:
+            - Path=/api/audit/notification/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

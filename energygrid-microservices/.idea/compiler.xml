@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
+        <module name="eureka-server" />
+        <module name="config-server" />
+      </profile>
+      <profile name="Annotation profile for workorder-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="outage-service" />
+        <module name="demand-response-service" />
+        <module name="asset-service" />
+        <module name="scheduling-service" />
+        <module name="identity-service" />
+        <module name="notification-service" />
+        <module name="workorder-service" />
+        <module name="billing-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
+      <module name="asset-service" options="-parameters" />
+      <module name="billing-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="demand-response-service" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="identity-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="outage-service" options="-parameters" />
+      <module name="scheduling-service" options="-parameters" />
+      <module name="workorder-service" options="-parameters" />
+    </option>
+  </component>
+</project>
